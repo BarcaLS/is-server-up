@@ -49,7 +49,7 @@ while true; do
     appeared_or_disappeared () {
         echo "I'm sending e-mail to $RECIPIENT."
         $SENDEMAIL -q -f "$SENDER" -t $RECIPIENT -u "$SUBJECT - $DAY $HOUR" -m " " -s $SMTP_SERVER -o tls=no -o message-charset=utf-8 -xu $SMTP_USER -xp $SMTP_PASS
-        
+
         # save to log and rotate logs to last 1000 lines
         echo "$DAY $HOUR $SUBJECT" >> $SCRIPT_DIR/logs/emails.log
         TMP=$(tail -n 1000 $SCRIPT_DIR/logs/emails.log)
@@ -58,17 +58,17 @@ while true; do
 
     # checking if alive
     echo -n "Checking $SSH_HOST. Status: "
-		
+
     CMD_OUTPUT=$($CHECK_CMD 2>&1)
     STATE=1
     if [ "$CMD_OUTPUT" == "$SSH_LOGIN" ]; then STATE=0; fi
     echo "$STATE"
-	
+
     # getting and saving current data
     DAY=`date +"%Y-%m-%d"`
     HOUR=`date +"%H:%M:%S"`
     echo "$DAY $HOUR $STATE" >> $SCRIPT_DIR/logs/status.log
-	
+
     # rotate logs to last 1000 lines
     TMP=$(tail -n 10000 $SCRIPT_DIR/logs/status.log)
     echo "${TMP}" > $SCRIPT_DIR/logs/status.log
@@ -107,10 +107,10 @@ while true; do
 	esac
 	(( LINE ++ ))
     done < $SCRIPT_DIR/logs/tmp.log
-	
+
     # SSH_HOST has appeared or disappeared
     CHANGE=""
-	
+
     # command results something other than 0 if host is down and 0 if host is up
     if [[ "$STATE_LAST1$STATE_LAST2$STATE_LAST3$STATE_LAST4$STATE_LAST5$STATE_LAST6$STATE_LAST7$STATE_LAST8$STATE_LAST9$STATE_LAST10$STATE_LAST11$STATE_LAST12" =~ 111111111110 ]]; then SUBJECT=$SUBJECT_ON; MSG=$MSG_ON; appeared_or_disappeared; fi
     if [[ "$STATE_LAST1$STATE_LAST2$STATE_LAST3$STATE_LAST4$STATE_LAST5$STATE_LAST6$STATE_LAST7$STATE_LAST8$STATE_LAST9$STATE_LAST10$STATE_LAST11$STATE_LAST12" =~ 011111111111 ]]; then SUBJECT=$SUBJECT_OFF; MSG=$MSG_OFF; pkill -f ":localhost:"; appeared_or_disappeared; fi
